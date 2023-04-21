@@ -2,8 +2,8 @@
 
 set -euo pipefail
 
-readonly default_image="vault"
-readonly default_tag="1.10.2"
+readonly default_image="hashicorp/vault"
+readonly default_tag="1.13.1"
 readonly image="${BUILDKITE_PLUGIN_VAULT_SECRETS_IMAGE:-${default_image}}:${BUILDKITE_PLUGIN_VAULT_SECRETS_TAG:-${default_tag}}"
 readonly container_name="vault-secrets-env-plugin-${BUILDKITE_JOB_ID}"
 
@@ -42,16 +42,8 @@ if [ -z "${VAULT_TOKEN:-}" ]; then
   fi
 fi
 
-# main logic
 trap cleanup EXIT INT QUIT
 
-# parse env items
-while IFS='=' read -r name _ ; do
-  if [[ $name =~ ^(BUILDKITE_PLUGIN_VAULT_SECRETS_ENV_) ]] ; then
-    export_name=$(echo "${name}" | sed 's/^BUILDKITE_PLUGIN_VAULT_SECRETS_ENV_//')
-    secret_path="$(strip_quotes "${!name}")"
-    secret_base_path="$(dirname "$secret_path")"
-    secret_key="$(basename "$secret_path")"
-    load_secret_into_env "${export_name}" "${secret_base_path}" "${secret_key}"
-  fi
-done < <(env | sort)
+# read secrets and set them into environment variables
+secret_path="$(strip_quotes ${BUILDKITE_PLUGIN_VAULT_SECRETS_PATH})"
+load_secrets_into_env "${secret_path}"

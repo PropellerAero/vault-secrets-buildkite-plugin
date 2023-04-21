@@ -14,8 +14,8 @@ steps:
   - command: ls
     plugins:
       - vj396/vault-secrets#v0.1.0:
-          image: 'vault' # optional. Defaults to https://hub.docker.com/_/vault
-          tag: "1.10.2" # optional. Defaults to 1.10.2
+          image: 'hashicorp/vault' # optional. Defaults to https://hub.docker.com/hashicorp/vault
+          tag: "1.13.1" # optional. Defaults to 1.13.1
           address: "http://vault-server:8200" # optional. plugin will error when VAULT_ADDR is also not in env.
           token: "123ASda" # optional. plugin will error when VAULT_TOKEN is also not in env. 
           env:
@@ -30,7 +30,7 @@ steps:
     plugins:
       - vj396/vault-secrets#v0.1.0:
           image: 'vault' # optional. Defaults to https://hub.docker.com/_/vault
-          tag: "1.10.2" # optional. Defaults to 1.10.2
+          tag: "1.13.1" # optional. Defaults to 1.13.1
           address: "http://vault-server:8200" # optional. plugin will error when VAULT_ADDR is also not in env.
           auth:
             method: aws # optional. defaults to vault login method `aws`
