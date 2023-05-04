@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 set -ueo pipefail
 
-function vault_auth_aws() {
+function vault_login_with_aws_auth() {
   local login_result;
   cleanup
   login_output=$(docker run \
       --cap-add IPC_LOCK \
       --name="${container_name}" \
+      -e AWS_ACCESS_KEY_ID \
+      -e AWS_SECRET_ACCESS_KEY \
+      -e AWS_SESSION_TOKEN \
       -- \
       "${image}" \
       vault login \

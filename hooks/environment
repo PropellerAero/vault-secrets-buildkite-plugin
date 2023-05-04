@@ -34,7 +34,7 @@ basedir="$( cd "$( dirname "${_source}" )" && cd .. && pwd )"
 
 if [ -z "${VAULT_TOKEN:-}" ]; then
   if [ -n "${BUILDKITE_PLUGIN_VAULT_SECRETS_AUTH_METHOD:-"aws"}" ]; then
-    vault_auth_${BUILDKITE_PLUGIN_VAULT_SECRETS_AUTH_METHOD:-"aws"}
+    vault_login_with_${BUILDKITE_PLUGIN_VAULT_SECRETS_AUTH_METHOD:-"aws"}_auth
   fi
   if [ -z "${VAULT_TOKEN:-}" ]; then
     echo "--- :skull_and_crossbones: Could not find 'VAULT_TOKEN' in the environment!"
@@ -44,6 +44,6 @@ fi
 
 trap cleanup EXIT INT QUIT
 
-# read secrets and set them into environment variables
+# read secrets and set them into individual environment variables
 secret_path="$(strip_quotes ${BUILDKITE_PLUGIN_VAULT_SECRETS_PATH})"
 load_secrets_into_env "${secret_path}"
