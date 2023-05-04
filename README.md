@@ -2,60 +2,41 @@
 
 Provides Secrets stored in Vault as environment variables in buildkite pipeline
 
-Only support KVV2 vault secrets backend.
+Only supports KVV2 vault secrets backend.
 
-## Example
+
+## Usage
 
 Add the following to your `pipeline.yml`:
 
-### Example with Vault Token
+
+### Authentication using the AWS Auth method
 ```yml
 steps:
   - command: ls
     plugins:
-      - vj396/vault-secrets#v0.1.0:
+      - PropellerAero/vault-secrets:
           image: 'hashicorp/vault' # optional. Defaults to https://hub.docker.com/hashicorp/vault
           tag: "1.13.1" # optional. Defaults to 1.13.1
-          address: "http://vault-server:8200" # optional. plugin will error when VAULT_ADDR is also not in env.
-          token: "123ASda" # optional. plugin will error when VAULT_TOKEN is also not in env. 
-          env:
-            MY_SECRET: secret/foo # where foo is the secret key
-            MY_OTHER_SECRET: secret/path/foo # Where secret/path is the vault path to the secret and foo is the secret key
+          address: "http://vault-server:8200" # optional; can also be set as an environment variable VAULT_ADDR. plugin will error when neither is set.
+          auth:
+            role: a-vault-role # REQUIRED. defaults to vault aws auth role `buildkite`
+            method: aws # optional. defaults to vault login method `aws`
+            path: aws/custom/path # optional. Vault Auth backend path. defaults to `aws`
+            header: vault.service.consul # optional. Defaults to VAULT_ADDR environment variable
+          path: secrets/foo # The path to the secret in Vault
+
 ```
 
-### Example with Auth Metadata
+### Authentication using existing Vault Token (untested)
 ```yml
 steps:
   - command: ls
     plugins:
-      - vj396/vault-secrets#v0.1.0:
-          image: 'vault' # optional. Defaults to https://hub.docker.com/_/vault
+      - PropellerAero/vault-secrets:
+          image: 'hashicorp/vault' # optional. Defaults to https://hub.docker.com/hashicorp/vault
           tag: "1.13.1" # optional. Defaults to 1.13.1
-          address: "http://vault-server:8200" # optional. plugin will error when VAULT_ADDR is also not in env.
-          auth:
-            method: aws # optional. defaults to vault login method `aws`
-            role: example-role # optional. defaults to vault aws auth role `buildkite`
-            path: aws/custom/path # optional. Vault Auth backend path. defaults to `aws`
-            header: vault.service.consul # optional. Defaults to vault_addr server name
-          env:
-            MY_SECRET: secret/foo # where foo is the secret key
-            MY_OTHER_SECRET: secret/path/foo # Where secret/path is the vault path to the secret and foo is the secret key
+          address: "http://vault-server:8200" # optional; can also be set as an environment variable VAULT_ADDR. plugin will error when neither is set.
+          token: "123ASda" # REQUIRED in this auth mode.
+          path: secrets/foo # path to the secret in Vault
 ```
-## Developing
-
-### Test
-```shell
-vault kv put secrets/buildkite/test foo1=bar foo=bar
-BUILDKITE_PLUGIN_VAULT_ENV_SECRETS_ENV_FOO1=secrets/buildkite/test/foo1 BUILDKITE_PLUGIN_VAULT_ENV_SECRETS_ENV_FOO=secrets/buildkite/test/foo  BUILDKITE_JOB_ID=123 VAULT_TOKEN=$(cat ~/.vault-token) ./hooks/environment
-```
-
-## TODO
-1. Add vault auth support
-
-## Contributing
-
-1. Fork the repo
-2. Make the changes
-3. Run the tests
-4. Commit and push your changes
-5. Send a pull request
