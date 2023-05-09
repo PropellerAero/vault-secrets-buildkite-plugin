@@ -15,9 +15,6 @@ configuration:
     address:
       type: string
       description: The address of the Vault server to interact with. Should include protocol, server, and port (corresponds to 'VAULT_ADDR')
-    token:
-      type: string
-      description: The `vault` token that will be used to fetch secrets. (corresponds to 'VAULT_TOKEN')
     auth:
       description: An object map of auth metadata to authenticate with vault and fetch a vault token
       type: object

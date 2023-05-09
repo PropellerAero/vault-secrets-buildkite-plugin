@@ -18,32 +18,13 @@ if [ -z "${VAULT_ADDR:-}" ]; then
     exit 1
 fi
 
-# Fail if there is no Vault token; need to be able to auth with vault.
-########################################################################
-if [ -n "${BUILDKITE_PLUGIN_VAULT_SECRETS_TOKEN:-}" ]; then
-    VAULT_TOKEN="${BUILDKITE_PLUGIN_VAULT_SECRETS_TOKEN}"
-    export VAULT_TOKEN
-fi
-
 _source="${BASH_SOURCE[0]}"
 [ -z "${_source:-}" ] && _source="${0}"
 basedir="$( cd "$( dirname "${_source}" )" && cd .. && pwd )"
 
 # shellcheck disable=SC1090
 . "$basedir/lib/shared.sh"
-
-if [ -z "${VAULT_TOKEN:-}" ]; then
-  if [ -n "${BUILDKITE_PLUGIN_VAULT_SECRETS_AUTH_METHOD:-"aws"}" ]; then
-    vault_login_with_${BUILDKITE_PLUGIN_VAULT_SECRETS_AUTH_METHOD:-"aws"}_auth
-  fi
-  if [ -z "${VAULT_TOKEN:-}" ]; then
-    echo "--- :skull_and_crossbones: Could not find 'VAULT_TOKEN' in the environment!"
-    exit 1
-  fi
-fi
-
 trap cleanup EXIT INT QUIT
 
-# read secrets and set them into individual environment variables
-secret_path="$(strip_quotes ${BUILDKITE_PLUGIN_VAULT_SECRETS_PATH})"
-load_secrets_into_env "${secret_path}"
+vault_login
+load_secrets_into_env "$(strip_quotes ${BUILDKITE_PLUGIN_VAULT_SECRETS_PATH})"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -ueo pipefail
 
-function vault_login_with_aws_auth() {
+function vault_login() {
   local login_result;
   cleanup
   login_output=$(docker run \
@@ -42,8 +42,8 @@ function get_secret_kvs() {
   cleanup
   secrets_output=$(docker run \
       --cap-add IPC_LOCK \
-      --env VAULT_TOKEN="${VAULT_TOKEN}" \
       --name="${container_name}" \
+      -e VAULT_TOKEN \
       -- \
       "${image}" \
       vault kv get \
