@@ -17,7 +17,7 @@ function vault_login() {
       -format=json \
       -method aws \
       role=${BUILDKITE_PLUGIN_VAULT_SECRETS_AUTH_ROLE} \
-      header_value="${VAULT_ADDR}" \
+      header_value="${BUILDKITE_PLUGIN_VAULT_SECRETS_VAULT_ADDR}" \
       )
   local login_rc=$?
   if [[ $login_rc -ne 0 ]]; then
