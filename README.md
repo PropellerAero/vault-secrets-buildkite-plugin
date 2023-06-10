@@ -16,11 +16,10 @@ steps:
       - PropellerAero/vault-secrets:
           image: 'hashicorp/vault' # optional. Defaults to https://hub.docker.com/hashicorp/vault
           tag: "1.13.1" # optional. Defaults to 1.13.1
-          address: "http://vault-server:8200" # optional; can also be set as an environment variable VAULT_ADDR. plugin will error when neither is set.
+          address: "https://vault-server" # optional; can also be set as an environment variable VAULT_ADDR and with optional `:PORT` suffix. plugin will error when neither is set.
           auth:
-            role: a-vault-role # REQUIRED. defaults to vault aws auth role `buildkite`
+            role: a-vault-role # REQUIRED. The name of the role to assume on Vault.
             path: aws-auth-custom-path # optional; Vault Auth backend path. defaults to `aws`
-            header: vault.service.consul # optional; Defaults to the value of the VAULT_ADDR environment variable
+            header: "https://vault-server" # optional; Defaults to the value of the VAULT_ADDR environment variable
           path: secrets/foo # REQUIRED. The path to the secret in Vault
-
 ```
